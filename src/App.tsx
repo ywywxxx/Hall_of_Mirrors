@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { LevelData } from './engine/types';
 import { generateLevel } from './engine/generate';
-import LevelCard from './components/LevelCard';
+import InteractiveLevelCard from './components/InteractiveLevelCard';
 
 function App() {
   const [levels, setLevels] = useState<LevelData[]>([]);
@@ -72,7 +72,7 @@ function App() {
           textShadow: '2px 2px 4px rgba(156, 39, 176, 0.2)',
           marginBottom: '8px'
         }}>
-          ✨ Laser Mirrors Level Generator ✨
+          ✨ Laser Mirrors Puzzle ✨
         </h1>
         <p style={{ 
           color: '#81C784', 
@@ -80,7 +80,7 @@ function App() {
           fontWeight: 400,
           margin: 0
         }}>
-          Generated levels for 2x2, 4x4, and 5x5 grids
+          Click cells to place mirrors: empty → \ → / → empty
         </p>
       </header>
 
@@ -91,7 +91,7 @@ function App() {
         gap: '30px' 
       }}>
         {levels.map((level, i) => (
-          <LevelCard 
+          <InteractiveLevelCard 
             key={`${level.size}-${i}`} 
             level={level} 
             onRegenerate={() => handleRegenerate(i)} 
@@ -106,8 +106,8 @@ function App() {
         textAlign: 'center',
         fontWeight: 400
       }}>
-        <p style={{ margin: '4px 0' }}>✨ Reflect light through mirrors and count the steps until it exits ✨</p>
-        <p style={{ margin: '4px 0' }}>∞ indicates a loop (rare for boundary-entry rays)</p>
+        <p style={{ margin: '4px 0' }}>Place mirrors to match the numbers. Red numbers show your current result.</p>
+        <p style={{ margin: '4px 0' }}>When all red numbers disappear, you've solved it! 🎉</p>
       </footer>
     </div>
   );
