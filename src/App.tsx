@@ -71,9 +71,19 @@ function App() {
             color: '#81C784', 
             fontSize: '20px',
             fontWeight: 400,
-            margin: 0
+            margin: 0,
+            marginBottom: '8px'
           }}>
             Choose your difficulty level
+          </p>
+          <p style={{ 
+            color: '#9E9E9E', 
+            fontSize: '14px',
+            fontWeight: 400,
+            margin: 0,
+            fontStyle: 'italic'
+          }}>
+            Inspired by the elegant logic puzzles from Jane Street
           </p>
         </header>
 
