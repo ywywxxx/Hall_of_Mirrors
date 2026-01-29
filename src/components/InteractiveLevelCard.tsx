@@ -14,6 +14,15 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
   // 当前图的镜子布局（用户放置的）
   const [currentMirrors, setCurrentMirrors] = useState<Map<string, MirrorType>>(new Map());
   
+  // 标记为"无镜子"的格子（灰色叉）
+  const [noMirrorMarks, setNoMirrorMarks] = useState<Set<string>>(new Set());
+  
+  // 当前鼠标悬停的格子
+  const [hoveredCell, setHoveredCell] = useState<{ r: number; c: number } | null>(null);
+  
+  // 是否显示答案
+  const [showAnswer, setShowAnswer] = useState(false);
+  
   const cellSize = 50;
   const clueSize = 35;
   const gridPadding = 2;
@@ -95,20 +104,52 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
     const key = `${r},${c}`;
     const current = currentMirrors.get(key);
     const newMirrors = new Map(currentMirrors);
+    const newNoMirrorMarks = new Set(noMirrorMarks);
     
+    // 如果放置了镜子，移除"无镜子"标记
     if (!current) {
       // 没有镜子 -> 放置 \
       newMirrors.set(key, '\\');
+      newNoMirrorMarks.delete(key);
     } else if (current === '\\') {
       // \ -> /
       newMirrors.set(key, '/');
+      newNoMirrorMarks.delete(key);
     } else {
       // / -> 移除
       newMirrors.delete(key);
     }
     
     setCurrentMirrors(newMirrors);
+    setNoMirrorMarks(newNoMirrorMarks);
   };
+
+  // 处理键盘事件（按x键标记/取消标记"无镜子"）
+  React.useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'x' || e.key === 'X') {
+        if (hoveredCell) {
+          const key = `${hoveredCell.r},${hoveredCell.c}`;
+          const newNoMirrorMarks = new Set(noMirrorMarks);
+          
+          // 如果格子有镜子，不能标记为"无镜子"
+          if (!currentMirrors.has(key)) {
+            if (newNoMirrorMarks.has(key)) {
+              newNoMirrorMarks.delete(key);
+            } else {
+              newNoMirrorMarks.add(key);
+            }
+            setNoMirrorMarks(newNoMirrorMarks);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [hoveredCell, noMirrorMarks, currentMirrors]);
 
   // 获取单元格中心坐标
   const getCellCenter = (r: number, c: number) => {
@@ -139,7 +180,7 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
     // 反转显示
     const displayAsForward = mirrorType === '\\';
     const rotation = displayAsForward ? '45deg' : '-45deg';
-    const mirrorColor = '#1565C0';
+    const mirrorColor = '#8B4513'; // 棕色
     
     return (
       <div
@@ -293,7 +334,7 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
                   {isWrong && (
                     <div style={{
                       position: 'absolute',
-                      left: '-35px',
+                      left: '-9px',
                       color: candyColors.clueWrong,
                       fontSize: '14px',
                       fontWeight: 700
@@ -323,10 +364,21 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
             {currentGrid.flat().map((cell: Cell, i: number) => {
               const r = Math.floor(i / size);
               const c = i % size;
+              const key = `${r},${c}`;
+              const hasNoMirrorMark = noMirrorMarks.has(key);
+              
               return (
                 <div 
                   key={i} 
                   onClick={() => handleCellClick(r, c)}
+                  onMouseEnter={(e) => {
+                    setHoveredCell({ r, c });
+                    e.currentTarget.style.backgroundColor = '#F5F5F5';
+                  }}
+                  onMouseLeave={(e) => {
+                    setHoveredCell(null);
+                    e.currentTarget.style.backgroundColor = candyColors.cellBg;
+                  }}
                   style={{ 
                     width: cellSize, 
                     height: cellSize, 
@@ -342,14 +394,32 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
                     cursor: 'pointer',
                     transition: 'background-color 0.2s'
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F5F5F5';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = candyColors.cellBg;
-                  }}
                 >
                   {cell.mirror && renderMirror(cell.mirror)}
+                  {/* 显示答案图中的镜子（半透明） */}
+                  {showAnswer && answerGrid[r][c].mirror && (
+                    <div style={{
+                      position: 'absolute',
+                      zIndex: 15,
+                      opacity: 0.4
+                    }}>
+                      {renderMirror(answerGrid[r][c].mirror!)}
+                    </div>
+                  )}
+                  {hasNoMirrorMark && !cell.mirror && (
+                    <div style={{
+                      fontSize: '36px',
+                      color: '#666666',
+                      fontWeight: 'bold',
+                      userSelect: 'none',
+                      pointerEvents: 'none',
+                      position: 'absolute',
+                      zIndex: 20,
+                      lineHeight: 1
+                    }}>
+                      ×
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -376,7 +446,7 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
                   {isWrong && (
                     <div style={{
                       position: 'absolute',
-                      right: '-35px',
+                      right: '-9px',
                       color: candyColors.clueWrong,
                       fontSize: '14px',
                       fontWeight: 700
@@ -456,6 +526,42 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
           ✨ New Level
         </button>
         
+        <button 
+          onClick={() => setShowAnswer(!showAnswer)}
+          style={{
+            backgroundColor: showAnswer ? '#FF9800' : '#FFC107',
+            color: '#FFFFFF',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontSize: '15px',
+            fontWeight: 700,
+            fontFamily: "'Kalam', cursive",
+            transition: 'all 0.2s',
+            boxShadow: '0 2px 4px rgba(255, 193, 7, 0.4)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 8px rgba(255, 193, 7, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 2px 4px rgba(255, 193, 7, 0.4)';
+          }}
+        >
+          {showAnswer ? '🙈 Hide Answer' : '👁️ Show Answer'}
+        </button>
+        
+        <div style={{
+          fontSize: '12px',
+          color: candyColors.text,
+          textAlign: 'center',
+          marginTop: '8px'
+        }}>
+          💡 Tip: Hover over a cell and press <strong>X</strong> to mark it as "no mirror"
+        </div>
+        
         {isSolved && (
           <div style={{
             backgroundColor: '#81C784',
@@ -464,7 +570,8 @@ const InteractiveLevelCard: React.FC<InteractiveLevelCardProps> = ({ level, onRe
             borderRadius: '8px',
             textAlign: 'center',
             fontSize: '16px',
-            fontWeight: 700
+            fontWeight: 700,
+            marginTop: '12px'
           }}>
             🎉 Congratulations! You solved it!
           </div>

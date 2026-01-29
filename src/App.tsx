@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { LevelData } from './engine/types';
 import { generateLevel } from './engine/generate';
+import { getMirrorCountForSize } from './engine/mirrorCount';
 import InteractiveLevelCard from './components/InteractiveLevelCard';
 
 function App() {
@@ -8,11 +9,12 @@ function App() {
 
   const initLevels = () => {
     try {
-      setLevels([
-        generateLevel(2, 1),
-        generateLevel(4, 3),
-        generateLevel(5, 5),
-      ]);
+      const sizes = [2, 3, 4, 5, 6, 7, 8, 9];
+      const newLevels = sizes.map(size => {
+        const mirrorCount = getMirrorCountForSize(size);
+        return generateLevel(size, mirrorCount);
+      });
+      setLevels(newLevels);
     } catch (error) {
       console.error("Failed to initialize levels:", error);
     }
@@ -25,9 +27,7 @@ function App() {
   const handleRegenerate = (index: number) => {
     const newLevels = [...levels];
     const size = newLevels[index].size;
-    let mirrorCount = 1;
-    if (size === 4) mirrorCount = 3;
-    if (size === 5) mirrorCount = 5;
+    const mirrorCount = getMirrorCountForSize(size);
     
     try {
       newLevels[index] = generateLevel(size, mirrorCount);
