@@ -1,0 +1,21 @@
+/* 全局样式 - 手写奶酪体字体 */
+
+/* 如果使用本地字体文件，取消注释以下代码并放置字体文件在 fonts 目录 */
+/*
+@font-face {
+  font-family: 'CheeseHandwriting';
+  src: url('/fonts/cheese-handwriting.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+
+/* 使用系统手写字体作为备选 */
+page {
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}
+
+/* 全局字体类 */
+.handwriting-font {
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}

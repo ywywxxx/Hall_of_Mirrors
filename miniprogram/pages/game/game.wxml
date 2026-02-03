@@ -1,0 +1,208 @@
+<view class="container">
+  <!-- 右上角积分显示 -->
+  <view class="mirror-coins-display">
+    <view class="mirror-coin-icon">🪞</view>
+    <text class="mirror-coins-count">{{mirrorCoins}}</text>
+  </view>
+
+  <view class="header">
+    <text class="title">✨ 镜子迷宫 ✨</text>
+    <text class="subtitle">点击格子放置镜子：空 → \ → / → 空</text>
+  </view>
+
+  <view class="game-card" wx:if="{{level}}">
+    <view class="card-header">
+      <text class="level-title">{{size}}×{{size}} 关卡</text>
+      <text class="solved-text" wx:if="{{isSolved}}">✅ 已解决！</text>
+    </view>
+
+    <view class="game-grid-container">
+      <!-- Top Clues -->
+      <view class="clue-row top-clues">
+        <view class="clue-spacer"></view>
+        <view 
+          wx:for="{{level.clues.top}}" 
+          wx:key="*this"
+          wx:for-item="clue"
+          wx:for-index="idx"
+          class="clue-cell top-clue {{selectedLight && selectedLight.side === 'top' && selectedLight.index === idx ? 'clue-selected' : ''}}"
+          data-side="top"
+          data-index="{{idx}}"
+          catchtap="onClueClick"
+        >
+            <text class="clue-value">{{clue}}</text>
+            <text 
+              class="clue-wrong" 
+              wx:if="{{currentClues && currentClues.top && currentClues.top[idx] !== clue}}"
+            >
+              {{currentClues.top[idx]}}
+            </text>
+        </view>
+        <view class="clue-spacer"></view>
+      </view>
+
+      <view class="grid-row">
+        <!-- Left Clues -->
+        <view class="clue-column left-clues">
+          <view 
+            wx:for="{{level.clues.left}}" 
+            wx:key="*this"
+            wx:for-item="clue"
+            wx:for-index="idx"
+            class="clue-cell left-clue {{selectedLight && selectedLight.side === 'left' && selectedLight.index === idx ? 'clue-selected' : ''}}"
+            data-side="left"
+            data-index="{{idx}}"
+            catchtap="onClueClick"
+          >
+            <text class="clue-value">{{clue}}</text>
+            <text 
+              class="clue-wrong" 
+              wx:if="{{currentClues && currentClues.left && currentClues.left[idx] !== clue}}"
+            >
+              {{currentClues.left[idx]}}
+            </text>
+          </view>
+        </view>
+
+        <!-- Grid -->
+        <view class="grid-wrapper">
+          <canvas 
+            canvas-id="pathCanvas" 
+            class="path-canvas"
+            style="width: {{size * cellSize + gridPadding * 2}}px; height: {{size * cellSize + gridPadding * 2}}px;"
+            disable-scroll="true"
+          ></canvas>
+          <view 
+            class="grid"
+            style="grid-template-columns: repeat({{size}}, {{cellSize}}px); grid-template-rows: repeat({{size}}, {{cellSize}}px);"
+          >
+          <view 
+            wx:for="{{gridCells}}" 
+            wx:key="key"
+            wx:for-item="cell"
+            class="cell"
+            data-r="{{cell.r}}"
+            data-c="{{cell.c}}"
+            bindtap="onCellClick"
+            bindlongpress="onCellLongPress"
+          >
+            <!-- User's mirror -->
+            <view 
+              class="mirror user-mirror"
+              wx:if="{{cell.userMirror === 'backslash'}}"
+              style="transform: rotate(45deg);"
+            ></view>
+            <view 
+              class="mirror user-mirror"
+              wx:if="{{cell.userMirror === 'forward'}}"
+              style="transform: rotate(-45deg);"
+            ></view>
+            
+            <!-- Answer mirror (semi-transparent) -->
+            <view 
+              class="mirror answer-mirror"
+              wx:if="{{showAnswer && cell.answerMirror === 'backslash'}}"
+              style="transform: rotate(45deg); opacity: 0.4;"
+            ></view>
+            <view 
+              class="mirror answer-mirror"
+              wx:if="{{showAnswer && cell.answerMirror === 'forward'}}"
+              style="transform: rotate(-45deg); opacity: 0.4;"
+            ></view>
+            
+            <!-- No mirror mark -->
+            <text 
+              class="no-mirror-mark"
+              wx:if="{{cell.noMirrorMark && !cell.userMirror}}"
+            >×</text>
+          </view>
+          </view>
+        </view>
+
+        <!-- Right Clues -->
+        <view class="clue-column right-clues">
+          <view 
+            wx:for="{{level.clues.right}}" 
+            wx:key="*this"
+            wx:for-item="clue"
+            wx:for-index="idx"
+            class="clue-cell right-clue {{selectedLight && selectedLight.side === 'right' && selectedLight.index === idx ? 'clue-selected' : ''}}"
+            data-side="right"
+            data-index="{{idx}}"
+            catchtap="onClueClick"
+          >
+            <text class="clue-value">{{clue}}</text>
+            <text 
+              class="clue-wrong" 
+              wx:if="{{currentClues && currentClues.right && currentClues.right[idx] !== clue}}"
+            >
+              {{currentClues.right[idx]}}
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Bottom Clues -->
+      <view class="clue-row bottom-clues">
+        <view class="clue-spacer"></view>
+        <view 
+          wx:for="{{level.clues.bottom}}" 
+          wx:key="*this"
+          wx:for-item="clue"
+          wx:for-index="idx"
+          class="clue-cell bottom-clue {{selectedLight && selectedLight.side === 'bottom' && selectedLight.index === idx ? 'clue-selected' : ''}}"
+          data-side="bottom"
+          data-index="{{idx}}"
+          catchtap="onClueClick"
+        >
+          <text class="clue-value">{{clue}}</text>
+          <text 
+            class="clue-wrong" 
+            wx:if="{{currentClues && currentClues.bottom && currentClues.bottom[idx] !== clue}}"
+          >
+            {{currentClues.bottom[idx]}}
+          </text>
+        </view>
+        <view class="clue-spacer"></view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="action-button" bindtap="generateNewLevel">✨ 新关卡</button>
+      <button 
+        class="action-button {{showAnswer ? 'active' : ''}}" 
+        bindtap="onShowAnswer"
+      >
+        <text wx:if="{{showAnswer}}">🙈 隐藏答案</text>
+        <text wx:else>
+          <text wx:if="{{isSolved}}">👁️ 显示答案（免费）</text>
+          <text wx:else>👁️ 显示答案（消耗 {{2 * size * size}} 个镜子）</text>
+        </text>
+      </button>
+    </view>
+
+    <!-- 光线开关 -->
+    <view class="light-switch-container">
+      <text class="light-switch-label">光线显示</text>
+      <switch 
+        class="light-switch" 
+        checked="{{showLightPaths}}" 
+        bindchange="onLightSwitchChange"
+        color="#CE93D8"
+      />
+    </view>
+
+    <view class="tip-text">
+      💡 提示：长按格子可标记为"无镜子"
+    </view>
+
+    <view class="solved-message" wx:if="{{isSolved}}">
+      🎉 恭喜！你解开了！
+    </view>
+  </view>
+
+  <!-- 返回按钮放在页面最下方 -->
+  <view class="bottom-actions">
+    <button class="back-button-bottom" bindtap="onBack">← 返回</button>
+  </view>
+</view>

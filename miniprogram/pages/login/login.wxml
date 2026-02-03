@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="login-card">
+    <view class="logo">
+      <text class="logo-icon">🪞</text>
+      <text class="logo-title">镜子迷宫</text>
+    </view>
+    
+    <view class="welcome-text">
+      <text class="welcome-title">欢迎！</text>
+      <text class="welcome-desc">开始你的益智之旅</text>
+    </view>
+
+    <button 
+      class="login-button" 
+      open-type="getUserInfo"
+      bindgetuserinfo="onGetUserInfo"
+    >
+      微信登录
+    </button>
+
+    <view class="skip-button" bindtap="onSkip">
+      <text>跳过，直接开始</text>
+    </view>
+  </view>
+</view>

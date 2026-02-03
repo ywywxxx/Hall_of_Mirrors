@@ -1,0 +1,36 @@
+<view class="container">
+  <!-- 右上角积分显示 -->
+  <view class="mirror-coins-display">
+    <view class="mirror-coin-icon">🪞</view>
+    <text class="mirror-coins-count">{{mirrorCoins}}</text>
+  </view>
+
+  <view class="header">
+    <text class="title">✨ 镜子迷宫 ✨</text>
+    <text class="subtitle">选择难度等级</text>
+    <text class="description">灵感来源于 Jane Street 的益智游戏</text>
+  </view>
+
+  <view class="size-grid">
+    <view 
+      wx:for="{{availableSizes}}" 
+      wx:key="index"
+      class="size-button"
+      data-size="{{item}}"
+      bindtap="onSizeSelect"
+    >
+      <text class="size-text">{{item}}×{{item}}</text>
+      <text class="difficulty-text">
+        <text wx:if="{{item <= 3}}">简单</text>
+        <text wx:elif="{{item <= 5}}">中等</text>
+        <text wx:elif="{{item <= 8}}">困难</text>
+        <text wx:else>专家</text>
+      </text>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text class="footer-text">放置镜子以匹配数字。红色数字显示当前结果。</text>
+    <text class="footer-text">当所有红色数字消失时，你就解开了！🎉</text>
+  </view>
+</view>

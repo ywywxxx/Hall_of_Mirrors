@@ -1,0 +1,142 @@
+/* 手写奶酪体字体配置 */
+/* 如果使用本地字体文件，取消注释以下代码 */
+/*
+@font-face {
+  font-family: 'CheeseHandwriting';
+  src: url('/fonts/cheese-handwriting.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFF9E6 0%, #E8F5E9 30%, #F3E5F5 60%, #E3F2FD 100%);
+  color: #5A5A5A;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 手写风格字体 - 使用楷体等手写字体 */
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+  position: relative;
+}
+
+/* 右上角积分显示 */
+.mirror-coins-display {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  border: 2px solid #FFD93D;
+}
+
+.mirror-coin-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.mirror-coins-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: #CE93D8;
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}
+
+.header {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.title {
+  display: block;
+  color: #CE93D8;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(206, 147, 216, 0.3);
+  margin-bottom: 12px;
+  white-space: nowrap;
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}
+
+.subtitle {
+  display: block;
+  color: #81C784;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}
+
+.description {
+  display: block;
+  color: #9E9E9E;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.size-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.size-button {
+  background-color: #B3D9FF;
+  color: #FFFFFF;
+  border: none;
+  padding: 30px 20px;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 8px rgba(179, 217, 255, 0.4);
+  transition: all 0.3s;
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+  cursor: pointer;
+  user-select: none;
+}
+
+.size-button:active {
+  background-color: #90CAF9;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(179, 217, 255, 0.6);
+}
+
+.size-text {
+  font-size: 32px;
+}
+
+.difficulty-text {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.footer {
+  margin-top: 60px;
+  color: #81C784;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 400;
+  font-family: 'STKaiti', 'KaiTi', 'STSong', 'SimSun', serif;
+}
+
+.footer-text {
+  display: block;
+  margin: 4px 0;
+}
